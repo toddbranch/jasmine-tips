@@ -1,4 +1,4 @@
-# Some Jasmine / Backbone Tips
+# Some Tips
 
 ## Use Underscore
 
@@ -26,13 +26,13 @@ To test things like mixins:
 ```
 describe('my test mixin', function() {
     beforeEach(function() {
+        // NOTE: I like to attach test objects / views like this
         this.mixedObject = _.extend({}, textMixin);
     });
 });
 ```
 
-Main idea: you can be creative.  Any valid javascript will work in tests.  Not many restrictions.
-Up to you to determine the code that best conveys purpose.
+Main idea: you can be creative.  Any valid javascript will work in tests.  Up to you to determine the code that best conveys purpose.
 
 ## Stubs (Spies)
 
@@ -49,7 +49,6 @@ it('should call Backbone.trigger', function() {
 ```
 
 You can also access the arguments that were passed to the spy for inspection:
-
 ```
 it('should pass appropriate first arg to Backbone.trigger', function() {
     spyOn(Backbone, 'trigger');
@@ -61,6 +60,23 @@ it('should pass appropriate first arg to Backbone.trigger', function() {
     expect(_.isObject(firstArg)).toBe(true);
     expect(firstArg.property).toBeDefined();
 });
+```
+
+By default, functions that are spied on return undefined.  But you can change that.
+```
+    var backboneTriggerSpy = spyOn(Backbone, 'trigger');
+
+    // calls to Backbone.trigger will return undefined here
+
+    backboneTriggerSpy.and.returnValue('test');
+
+    // calls to Backbone.trigger will return 'test' here
+
+    backboneTriggerSpy.and.callFake(function(e) {
+        return e;
+    });
+
+    // calls to Backbone.trigger will call the function, which returns the first argument
 ```
 
 ## Mocks
@@ -106,4 +122,24 @@ it('should call preventDefault on event', function() {
 });
 ```
 
-### Backbone.Models
+Also useful for Backbone.Models, etc.
+
+# Hard Things to Test
+
+## Globals
+
+Don't use them.  If you must, create a function that accesses the global variable and stub it out.
+
+## Big Functions
+
+Refactor into smaller functions.
+
+## Anonymous Callbacks
+
+Turn these into named functions and test them separately.
+
+# General Thoughts
+
+## Isolate Your Code
+
+You shouldn't be testing Backbone or Handlebars functions or functions your code is requiring!  Stub them!
