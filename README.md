@@ -143,3 +143,23 @@ Turn these into named functions and test them separately.
 ## Isolate Your Code
 
 You shouldn't be testing Backbone or Handlebars functions or functions your code is requiring!  Stub them!
+
+## Don't Swallow Errors
+
+If you get bad input, don't be afraid to throw.  We don't want to hide errors.
+
+Here's how to test:
+```
+function throwFunction() {
+    throw new Error('an error!');
+}
+
+// the syntax for expecting errors to be thrown is a little weird
+it('should throw', function() {
+    expect(function() {
+        throwFunction();
+    }).toThrow();
+
+    expect(_.bind(throwFunction, this)).toThrow();
+});
+```
